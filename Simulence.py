@@ -90,6 +90,8 @@ fasta_sequences = SeqIO.parse(open(sys.argv[2]),'fasta')
 out_file = open(sys.argv[5], "w")
 for fasta in fasta_sequences:
     name, sequence, description = fasta.id, str(fasta.seq), str(fasta.description)
+    #if len(sequence) < readLength: # If the provided readLength is longer than the current sequence, change provided read Length
+    #    readLength = len(sequence)
     reads = read_generator(sequence, readLength, foldChange)
     count = 1
     for new_seq in reads:
