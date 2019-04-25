@@ -14,8 +14,8 @@ Sys arguments:
 
 ## Info
 * Simulated reads are mutated (substitutions/INDELs) to replicate Illumina sequencing.
-* Substitution rate per nucleotide: 0.0035
-* INDEL rate per nucleotide: 3.95e-6
+* Substitution rate per nucleotide: **0.0035**
+* INDEL rate per nucleotide: **3.95e-6**
 * Substitution and INDEL rates taken from: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4787001/
 
 ## Contributors
