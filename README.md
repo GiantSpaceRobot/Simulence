@@ -6,11 +6,11 @@ A Python2 script for generating simulated RNA-seq data with realistic read cover
 python Simulence.py FASTQ input.fa 100 10 output.fq
 ```
 Sys arguments: 
-* FASTQ       Output format. Options: FASTA/FASTQ 
-* input.fa    Input file. File must be in FASTA format
-* 100         Read length. No size limitations, but read length must be shorter than sequences provided.
-* 10          Fold coverage
-* output.fq   Output file name
+* FASTQ       _Output format. Options: FASTA/FASTQ_
+* input.fa    _Input file. File must be in FASTA format_
+* 100         _Read length. No size limitations, but read length must be shorter than sequences provided_
+* 10          _Fold coverage_
+* output.fq   _Output file name_
 
 ## Info
 * Simulated reads are mutated (substitutions/INDELs) to replicate Illumina sequencing.
