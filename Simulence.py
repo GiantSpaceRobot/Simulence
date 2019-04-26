@@ -76,20 +76,25 @@ def mutator(my_read):
     return readString
  
 def read_generator(seq, readLen, foldChng):
-    #Divide seq length by fold change
-    seqLen = len(seq)
-    readsFor1X = float(seqLen/readLen) #Number of reads required to get 1X coverage
-    readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
     read_list = list()
     for n in range(int(foldChng)):
         seq1 = seq
+        seqLen = len(seq1)
+        readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage
+        if readsFor1X < 5:
+            newReadLen = seqLen/int(readsFor1X)
+            #otherReadLen = seqLen - newReadLen
+            print (seqLen, readLen, newReadLen)
+        else:
+            newReadLen = readLen
+        readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
         for i in range(int(readsFor1X)):     ### Randomly select sequence from either end of given seq
             if (choice(binaryList) == 1):
-                new_read = seq1[0:readLen]
-                seq1 = seq1[readLen:]
+                new_read = seq1[0:newReadLen]
+                seq1 = seq1[newReadLen:]
             else:
-                new_read = seq1[-readLen:]
-                seq1 = seq1[:-readLen]
+                new_read = seq1[-newReadLen:]
+                seq1 = seq1[:-newReadLen]
             #mutate read
             mutator(new_read)
             read_list.append(new_read)    
