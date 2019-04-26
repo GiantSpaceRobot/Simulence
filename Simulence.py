@@ -47,6 +47,16 @@ nucleotides = "AGTC"
 def repeat_to_length(string_to_expand, length):
    return (string_to_expand * ((length/len(string_to_expand))+1))[:length]
 
+def chunkIt(seq, num):
+    # From: https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
+    avg = len(seq) / float(num)
+    reads = []
+    last = 0.0
+    while last < len(seq):
+        reads.append(seq[int(last):int(last + avg)])
+        last += avg
+    return reads
+
 def mutator(my_read):
     #Introduce mutations/INDELs into reads (error profiles from https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4787001/)
     readString = ""
@@ -77,27 +87,29 @@ def mutator(my_read):
  
 def read_generator(seq, readLen, foldChng):
     read_list = list()
+    seq1 = seq
     for n in range(int(foldChng)):
-        seq1 = seq
         seqLen = len(seq1)
         readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage
         if readsFor1X < 5:
-            newReadLen = seqLen/int(readsFor1X)
-            #otherReadLen = seqLen - newReadLen
-            print (seqLen, readLen, newReadLen)
+            newReadLen = seqLen/int(readsFor1X + 1)
+            reads = chunkIt(seq1, int(readsFor1X+1))
+            for shortRead in reads:
+                new_read = mutator(shortRead)
+                read_list.append(new_read)
         else:
             newReadLen = readLen
-        readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
-        for i in range(int(readsFor1X)):     ### Randomly select sequence from either end of given seq
-            if (choice(binaryList) == 1):
-                new_read = seq1[0:newReadLen]
-                seq1 = seq1[newReadLen:]
-            else:
-                new_read = seq1[-newReadLen:]
-                seq1 = seq1[:-newReadLen]
-            #mutate read
-            mutator(new_read)
-            read_list.append(new_read)    
+            readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
+            for i in range(int(readsFor1X + 1)):     ### Randomly select sequence from either end of given seq
+                if (choice(binaryList) == 1):
+                    new_read = seq1[0:newReadLen]
+                    seq1 = seq1[newReadLen:]
+                else:
+                    new_read = seq1[-newReadLen:]
+                    seq1 = seq1[:-newReadLen]
+                #mutate read
+                new_read = mutator(new_read)
+                read_list.append(new_read)    
     return read_list
 
 fasta_sequences = SeqIO.parse(open(sys.argv[2]),'fasta')
