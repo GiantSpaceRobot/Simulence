@@ -88,27 +88,35 @@ def mutator(my_read):
 def read_generator(seq, readLen, foldChng):
     read_list = list()
     seq1 = seq
+    seqLen = len(seq1)
+    readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage
     for n in range(int(foldChng)):
-        seqLen = len(seq1)
-        readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage
-        if readsFor1X < 5:
-            newReadLen = seqLen/int(readsFor1X + 1)
-            reads = chunkIt(seq1, int(readsFor1X+1))
-            for shortRead in reads:
-                new_read = mutator(shortRead)
-                read_list.append(new_read)
-        else:
-            newReadLen = readLen
-            readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
-            for i in range(int(readsFor1X + 1)):     ### Randomly select sequence from either end of given seq
+        #readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
+        flag = 1
+        for i in range(int(readsFor1X + 1)):     ### Randomly select sequence from either end of given seq
+            seqLen = len(seq1)
+            readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage    
+            if readsFor1X < 5:
+                if flag == 1:
+                    flag = 0
+                    newReadLen = seqLen/int(readsFor1X + 1)
+                    reads = chunkIt(seq1, int(readsFor1X + 1))
+                    for shortRead in reads:
+                        new_read = mutator(shortRead)
+                        read_list.append(new_read)
+                        #print len(new_read)
+                else:
+                    pass
+            else:
+                newReadLen = readLen
                 if (choice(binaryList) == 1):
                     new_read = seq1[0:newReadLen]
                     seq1 = seq1[newReadLen:]
                 else:
                     new_read = seq1[-newReadLen:]
                     seq1 = seq1[:-newReadLen]
-                #mutate read
                 new_read = mutator(new_read)
+                #print len(new_read)
                 read_list.append(new_read)    
     return read_list
 
@@ -119,9 +127,11 @@ for fasta in fasta_sequences:
     #if len(sequence) < readLength: # If the provided readLength is longer than the current sequence, change provided read Length
     #    readLength = len(sequence)
     reads = read_generator(sequence, readLength, foldChange)
+    #print len(sequence)
     count = 1
     for new_seq in reads:
         new_name = name + "_simread" + str(count)
+        readLength = len(new_seq)
         if sys.argv[1] == "FASTA":
             out_file.write(">" + new_name + "\n" + new_seq + "\n") #FASTA output
         elif sys.argv[1] == "FASTQ":
