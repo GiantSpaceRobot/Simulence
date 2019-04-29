@@ -2,16 +2,21 @@
 
 #Copyright 2019 Paul Donovan
 #
-#Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+#Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+#software and associated documentation files (the "Software"), to deal in the Software 
+#without restriction, including without limitation the rights to use, copy, modify, merge, 
+#publish, distribute, sublicense, and/or sell copies of the Software, and to permit 
+#persons to whom the Software is furnished to do so, subject to the following conditions:
 #
-#The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+#The above copyright notice and this permission notice shall be included in all copies or 
+#substantial portions of the Software.
 #
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-"""
-Generate FASTA/FASTQ with realistic coverage distribution
-"""
+#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+#INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR 
+#PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
+#LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT 
+#OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR 
+#OTHER DEALINGS IN THE SOFTWARE.
 
 __author__ = "Paul Donovan" 
 __maintainer__ = "Paul Donovan"
@@ -28,6 +33,9 @@ parser.add_argument('Read length (e.g "50")')
 parser.add_argument('Fold coverage (e.g "100")')
 parser.add_argument('FASTA/FASTQ output')
 if len(sys.argv[1:]) == 0:
+    """
+    Simulence generates FASTA/FASTQ with realistic coverage distribution
+    """
     parser.print_help()
     parser.exit()
 args = parser.parse_args()
@@ -108,7 +116,7 @@ def read_generator(seq, readLen, foldCoverage):
                 else:
                     pass
             else:
-                newReadLen = readLen
+                newReadLen = int(readLen)
                 if (choice(binaryList) == 1):
                     new_read = seq1[0:newReadLen]
                     seq1 = seq1[newReadLen:]
@@ -116,7 +124,6 @@ def read_generator(seq, readLen, foldCoverage):
                     new_read = seq1[-newReadLen:]
                     seq1 = seq1[:-newReadLen]
                 new_read = mutator(new_read)
-                #print len(new_read)
                 read_list.append(new_read)    
     return read_list
 
