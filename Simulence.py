@@ -39,7 +39,7 @@ from random import *
 
 #Define parameters
 readLength = int(sys.argv[3])
-foldChange = float(sys.argv[4])
+foldCov = float(sys.argv[4])
 binaryList = [0,1]
 nucleotides = "AGTC"
 
@@ -85,13 +85,13 @@ def mutator(my_read):
         readString = readString + nucleotide
     return readString
  
-def read_generator(seq, readLen, foldChng):
+def read_generator(seq, readLen, foldCoverage):
     read_list = list()
     seq1 = seq
     seqLen = len(seq1)
     readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage
-    for n in range(int(foldChng)):
-        #readsForFoldChng = int(readsFor1X*foldChng) #Number of reads required to get given fold change coverage
+    for n in range(int(foldCoverage)):
+        #readsForFoldChng = int(readsFor1X*foldCoverage) #Number of reads required to get given fold change coverage
         flag = 1
         for i in range(int(readsFor1X + 1)):     ### Randomly select sequence from either end of given seq
             seqLen = len(seq1)
@@ -123,11 +123,11 @@ def read_generator(seq, readLen, foldChng):
 fasta_sequences = SeqIO.parse(open(sys.argv[2]),'fasta')
 out_file = open(sys.argv[5], "w")
 for fasta in fasta_sequences:
+    readLength = sys.argv[3] #reset this variable with every iteration
     name, sequence, description = fasta.id, str(fasta.seq), str(fasta.description)
     #if len(sequence) < readLength: # If the provided readLength is longer than the current sequence, change provided read Length
     #    readLength = len(sequence)
-    reads = read_generator(sequence, readLength, foldChange)
-    #print len(sequence)
+    reads = read_generator(sequence, readLength, foldCov)
     count = 1
     for new_seq in reads:
         new_name = name + "_simread" + str(count)
