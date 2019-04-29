@@ -10,7 +10,7 @@ python Simulence.py FASTQ input.fa 100 10 output.fq
 Sys arguments: 
 * FASTQ       _(Output format. Options: FASTA/FASTQ)_
 * input.fa    _(Input file. File must be in FASTA format)_
-* 100         _(Read length. No size limitations, but read length must be shorter than sequences provided)_
+* 100         _(Read length. No size limitations)_
 * 10          _(Fold coverage)_
 * output.fq   _(Output file name)_
 
