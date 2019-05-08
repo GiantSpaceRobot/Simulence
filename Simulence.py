@@ -129,6 +129,10 @@ def read_generator(seq, readLen, foldCoverage):
 
 fasta_sequences = SeqIO.parse(open(sys.argv[2]),'fasta')
 out_file = open(sys.argv[5], "w")
+log_file = open(str(sys.argv[5]) + ".log", "w") 
+### Write header for log file
+log_file.write("Sequence\tNumber of reads generated\n")
+
 for fasta in fasta_sequences:
     readLength = sys.argv[3] #reset this variable with every iteration
     name, sequence, description = fasta.id, str(fasta.seq), str(fasta.description)
@@ -136,6 +140,9 @@ for fasta in fasta_sequences:
     #    readLength = len(sequence)
     reads = read_generator(sequence, readLength, foldCov)
     count = 1
+    newList = (str(name), str(len(reads)), "\n")
+    log = "\t".join(newList)
+    log_file.write(log)
     for new_seq in reads:
         new_name = name + "_simread" + str(count)
         readLength = len(new_seq)
@@ -146,4 +153,4 @@ for fasta in fasta_sequences:
             out_file.write("@" + new_name + "\n" + new_seq + "\n+\n" + quality_score + "\n") #FASTQ output
         count = count + 1
 out_file.close()
-
+log_file.close()
