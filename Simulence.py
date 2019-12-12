@@ -22,6 +22,9 @@ __author__ = "Paul Donovan"
 __maintainer__ = "Paul Donovan"
 __email__ = "pauldonovan@rcsi.com"
 
+#Import libraries
+from Bio import SeqIO
+from random import *
 import sys
 import argparse
 
@@ -40,15 +43,11 @@ if len(sys.argv[1:]) == 0:
     parser.exit()
 args = parser.parse_args()
 
-#Import libraries
-from Bio import SeqIO
-import sys
-from random import *
-
 #Define parameters
 readLength = int(sys.argv[3])
 foldCov = float(sys.argv[4])
 binaryList = [0,1]
+ten_list = [0,1,0,0,0,0,0,0,0,0]
 nucleotides = "AGTC"
 
 #Define functions
@@ -98,33 +97,22 @@ def read_generator(seq, readLen, foldCoverage):
     seq1 = seq
     seqLen = len(seq1)
     readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage
-    for n in range(int(foldCoverage)):
-        #readsForFoldChng = int(readsFor1X*foldCoverage) #Number of reads required to get given fold change coverage
+    for n in range(int(foldCoverage)):   # for 1... in 100 read coverage
         flag = 1
-        for i in range(int(readsFor1X + 1)):     ### Randomly select sequence from either end of given seq
-            seqLen = len(seq1)
-            readsFor1X = float(seqLen)/float(readLen) #Number of reads required to get 1X coverage    
-            if readsFor1X < 5:
-                if flag == 1:
-                    flag = 0
-                    newReadLen = seqLen/int(readsFor1X + 1)
-                    reads = chunkIt(seq1, int(readsFor1X + 1))
-                    for shortRead in reads:
-                        new_read = mutator(shortRead)
-                        read_list.append(new_read)
-                        #print len(new_read)
-                else:
-                    pass
-            else:
-                newReadLen = int(readLen)
-                if (choice(binaryList) == 1):
-                    new_read = seq1[0:newReadLen]
-                    seq1 = seq1[newReadLen:]
-                else:
-                    new_read = seq1[-newReadLen:]
-                    seq1 = seq1[:-newReadLen]
-                new_read = mutator(new_read)
-                read_list.append(new_read)    
+        my_seq = seq1
+        seqLen = len(seq1)
+        newReadLen = int(readLen)
+        random_choice1 = choice(binaryList) # Choose which side of the sequence to simulate this batch of reads from
+        random_choice2 = choice(ten_list) # Randomly choose 1 out of 10
+        for i in range(int(readsFor1X)):     ### Randomly select sequence from either end of given seq
+            if random_choice1 == 1: # 50:50. Simulate reads from left-hand side of sequence
+                new_read = my_seq[0:newReadLen] # Start new read from left of input sequence (randomly add 1 to both half of the time for additional randomness)
+                my_seq = my_seq[newReadLen:] # Shorten seq1 to reflect removal of newly simulated read (sampling without replacement)
+            else:                         # 50:50. Sim reads from right-hand side of sequence
+                new_read = my_seq[-newReadLen:] # Start new read from right of input sequence
+                my_seq = my_seq[:-newReadLen] # Shorten seq1 to reflect removal of newly simulated read (sampling without replacement)
+            new_read = mutator(new_read)
+            read_list.append(new_read)
     return read_list
 
 fasta_sequences = SeqIO.parse(open(sys.argv[2]),'fasta')
@@ -136,8 +124,6 @@ log_file.write("Sequence\tNumber of reads generated\n")
 for fasta in fasta_sequences:
     readLength = sys.argv[3] #reset this variable with every iteration
     name, sequence, description = fasta.id, str(fasta.seq), str(fasta.description)
-    #if len(sequence) < readLength: # If the provided readLength is longer than the current sequence, change provided read Length
-    #    readLength = len(sequence)
     reads = read_generator(sequence, readLength, foldCov)
     count = 1
     newList = (str(name), str(len(reads)), "\n")
